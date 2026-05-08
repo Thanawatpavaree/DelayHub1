@@ -10,50 +10,43 @@ local Window = Fluent:CreateWindow({
     MinimizeKey = Enum.KeyCode.LeftControl
 })
 
--- TAB
+----------------------------------------------------
+-- TABS
+----------------------------------------------------
+
 local Tabs = {
     Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "user" }),
 }
 
 ----------------------------------------------------
 -- VARIABLES
 ----------------------------------------------------
 
-getgenv().AutoAttack = false
 getgenv().AutoSpeed = false
 getgenv().AutoPower = false
+getgenv().AutoKick = false
 
 ----------------------------------------------------
--- AUTO ATTACK
+-- PLAYER TAB
 ----------------------------------------------------
 
-Tabs.Main:AddToggle("AutoAttack", {
-    Title = "Auto Attack",
-    Description = "ตีอัตโนมัติ",
-    Default = false,
+Tabs.Player:AddButton({
+    Title = "Teleport",
+    Description = "วาร์ป",
 
-    Callback = function(Value)
-        getgenv().AutoAttack = Value
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local character = player.Character
 
-        while getgenv().AutoAttack do
-            task.wait(0.1)
-
-            pcall(function()
-                game:GetService("VirtualInputManager")
-                    :SendMouseButtonEvent(0,0,0,true,game,0)
-
-                game:GetService("VirtualInputManager")
-                    :SendMouseButtonEvent(0,0,0,false,game,0)
-            end)
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame =
+                CFrame.new(0,10,0)
         end
     end
 })
 
-----------------------------------------------------
--- AUTO SPEED
-----------------------------------------------------
-
-Tabs.Main:AddToggle("AutoSpeed", {
+Tabs.Player:AddToggle("AutoSpeed", {
     Title = "Auto Speed Upgrade",
     Description = "อัปสปีดอัตโนมัติ",
     Default = false,
@@ -74,36 +67,65 @@ Tabs.Main:AddToggle("AutoSpeed", {
 })
 
 ----------------------------------------------------
--- AUTO POWER
+-- MAIN TAB
 ----------------------------------------------------
 
 Tabs.Main:AddToggle("AutoPower", {
-    Title = "Auto Power Upgrade",
-    Description = "ถือไอเทมแล้วอัปพลังอัตโนมัติ",
+    Title = "Auto Power",
+    Description = "อัปพลังอัตโนมัติ",
     Default = false,
 
     Callback = function(Value)
         getgenv().AutoPower = Value
 
         while getgenv().AutoPower do
-            task.wait(0.3)
+            task.wait(0.1)
 
             pcall(function()
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-
-                -- เช็คว่าถือ Tool อยู่ไหม
-                local tool = character:FindFirstChildOfClass("Tool")
-
-                if tool then
-                    game:GetService("ReplicatedStorage")
-                        .Shared.Packages.Network.rev_TaviMishkal
-                        :FireServer()
-                end
+                game:GetService("ReplicatedStorage")
+                    .Shared.Packages.Network.rev_TaviMishkal
+                    :FireServer()
             end)
         end
     end
 })
+
+Tabs.Main:AddToggle("AutoKick", {
+    Title = "Auto Kick Best",
+    Description = "เตะอัตโนมัติแรงสุด",
+    Default = false,
+
+    Callback = function(Value)
+        getgenv().AutoKick = Value
+
+        while getgenv().AutoKick do
+            task.wait(0.1)
+
+            pcall(function()
+                game:GetService("ReplicatedStorage")
+                    .Shared.Packages.Network.rev_KickEvent
+                    :FireServer(0.9651641547679901)
+            end)
+        end
+    end
+})
+
+----------------------------------------------------
+-- AUTO TP WHEN TRANSFORM
+----------------------------------------------------
+
+game:GetService("ReplicatedStorage")
+    .Shared.Packages.Network.rev_Transformed
+    .OnClientEvent:Connect(function()
+
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame =
+            CFrame.new(0,10,0)
+    end
+end)
 
 ----------------------------------------------------
 -- NOTIFY
@@ -113,4 +135,4 @@ Fluent:Notify({
     Title = "Delay Hub",
     Content = "Loaded Successfully",
     Duration = 3
-})
+    })
