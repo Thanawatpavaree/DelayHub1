@@ -1,22 +1,29 @@
-local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/source.lua"))()
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
 
-local Window = Fluent:CreateWindow({
+local Window = WindUI:CreateWindow({
     Title = "Delay Hub",
-    SubTitle = "AUTO FARM",
-    TabWidth = 160,
+    Icon = "rbxassetid://0",
+    Author = "AUTO FARM",
+    Folder = "DelayHub",
     Size = UDim2.fromOffset(520, 350),
-    Acrylic = true,
-    Theme = "Dark"
+    Transparent = true,
+    Theme = "Dark",
+    SideBarWidth = 170
 })
 
 ----------------------------------------------------
 -- TABS
 ----------------------------------------------------
 
-local Tabs = {
-    Main = Window:AddTab({ Title = "Main", Icon = "home" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "user" }),
-}
+local MainTab = Window:Tab({
+    Title = "Main",
+    Icon = "home"
+})
+
+local PlayerTab = Window:Tab({
+    Title = "Player",
+    Icon = "user"
+})
 
 ----------------------------------------------------
 -- VARIABLES
@@ -30,24 +37,25 @@ getgenv().AutoKick = false
 -- PLAYER TAB
 ----------------------------------------------------
 
-Tabs.Player:AddButton({
+PlayerTab:Button({
     Title = "Teleport",
-    Description = "วาร์ป",
+    Desc = "วาร์ป",
 
     Callback = function()
         local player = game.Players.LocalPlayer
         local character = player.Character
 
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(0,10,0)
+            character.HumanoidRootPart.CFrame =
+                CFrame.new(0,10,0)
         end
     end
 })
 
-Tabs.Player:AddToggle("AutoSpeed", {
+PlayerTab:Toggle({
     Title = "Auto Speed Upgrade",
-    Description = "อัปสปีดอัตโนมัติ",
-    Default = false,
+    Desc = "อัปสปีดอัตโนมัติ",
+    Value = false,
 
     Callback = function(Value)
         getgenv().AutoSpeed = Value
@@ -68,10 +76,10 @@ Tabs.Player:AddToggle("AutoSpeed", {
 -- MAIN TAB
 ----------------------------------------------------
 
-Tabs.Main:AddToggle("AutoPower", {
+MainTab:Toggle({
     Title = "Auto Power",
-    Description = "อัปพลังอัตโนมัติ",
-    Default = false,
+    Desc = "อัปพลังอัตโนมัติ",
+    Value = false,
 
     Callback = function(Value)
         getgenv().AutoPower = Value
@@ -88,10 +96,10 @@ Tabs.Main:AddToggle("AutoPower", {
     end
 })
 
-Tabs.Main:AddToggle("AutoKick", {
+MainTab:Toggle({
     Title = "Auto Kick Best",
-    Description = "เตะอัตโนมัติแรงสุด",
-    Default = false,
+    Desc = "เตะอัตโนมัติแรงสุด",
+    Value = false,
 
     Callback = function(Value)
         getgenv().AutoKick = Value
@@ -109,10 +117,27 @@ Tabs.Main:AddToggle("AutoKick", {
 })
 
 ----------------------------------------------------
+-- AUTO TP WHEN TRANSFORM
+----------------------------------------------------
+
+game:GetService("ReplicatedStorage")
+    .Shared.Packages.Network.rev_Transformed
+    .OnClientEvent:Connect(function()
+
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.CFrame =
+            CFrame.new(712.1228637695312,3.8564038276672363,227.97109985351562)
+    end
+end)
+
+----------------------------------------------------
 -- NOTIFY
 ----------------------------------------------------
 
-Fluent:Notify({
+WindUI:Notify({
     Title = "Delay Hub",
     Content = "Loaded Successfully",
     Duration = 3
