@@ -37,21 +37,6 @@ getgenv().AutoKick = false
 -- PLAYER TAB
 ----------------------------------------------------
 
-PlayerTab:Button({
-    Title = "Teleport",
-    Desc = "วาร์ป",
-
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local character = player.Character
-
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame =
-                CFrame.new(0,10,0)
-        end
-    end
-})
-
 PlayerTab:Toggle({
     Title = "Auto Speed Upgrade",
     Desc = "อัปสปีดอัตโนมัติ",
@@ -61,7 +46,7 @@ PlayerTab:Toggle({
         getgenv().AutoSpeed = Value
 
         while getgenv().AutoSpeed do
-            task.wait(0.3)
+            task.wait(0.5)
 
             pcall(function()
                 game:GetService("ReplicatedStorage")
@@ -85,7 +70,7 @@ MainTab:Toggle({
         getgenv().AutoPower = Value
 
         while getgenv().AutoPower do
-            task.wait(0.1)
+            task.wait(2)
 
             pcall(function()
                 game:GetService("ReplicatedStorage")
@@ -105,7 +90,7 @@ MainTab:Toggle({
         getgenv().AutoKick = Value
 
         while getgenv().AutoKick do
-            task.wait(0.1)
+            task.wait(3)
 
             pcall(function()
                 game:GetService("ReplicatedStorage")
@@ -117,19 +102,36 @@ MainTab:Toggle({
 })
 
 ----------------------------------------------------
--- AUTO TP WHEN TRANSFORM
+-- AUTO FLY HOME WHEN TRANSFORM
 ----------------------------------------------------
 
 game:GetService("ReplicatedStorage")
     .Shared.Packages.Network.rev_Transformed
     .OnClientEvent:Connect(function()
 
+    task.wait(3)
+
     local player = game.Players.LocalPlayer
     local character = player.Character
 
     if character and character:FindFirstChild("HumanoidRootPart") then
-        character.HumanoidRootPart.CFrame =
-            CFrame.new(712.1228637695312,3.8564038276672363,227.97109985351562)
+
+        local hrp = character.HumanoidRootPart
+
+        -- พิกัดบ้าน
+        local target = Vector3.new(712.1228637695312, 3.8564038276672363, 227.97109985351562.)
+
+        -- บินกลับ
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bodyVelocity.Velocity = (target - hrp.Position).Unit * 80
+        bodyVelocity.Parent = hrp
+
+        repeat
+            task.wait(3)
+        until (hrp.Position - target).Magnitude < 10
+
+        bodyVelocity:Destroy()
     end
 end)
 
